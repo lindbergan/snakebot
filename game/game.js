@@ -71,7 +71,7 @@ const Game = {
     snake.id = uuidv4()
 
     Game.snakes.push(snake)
-    console.log("Snake added on positions: ", snake.positions)
+    //console.log("Snake added on positions: ", snake.positions)
   },
 
   tileHasSnake: (posX, posY) => {

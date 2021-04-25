@@ -15,9 +15,9 @@ const SmartV2 = {
     const head = snake.positions[0]
     const myDirection = snake.direction
 
-    console.log("\n" +
+    /*console.log("\n" +
       "My head: " + JSON.stringify(head) + "\n" +
-      "My direction: " + myDirection)
+      "My direction: " + myDirection)*/
 
     const otherSnakes = Game.snakes
       .filter(({ id, dead }) => !dead && id !== snake.id)
@@ -57,6 +57,7 @@ const SmartV2 = {
         // Check if I can go there
         if (!Game.isSquareFreeToMoveTo(maybePosition.posX, maybePosition.posY)) {
           obj.distance += 999
+          obj.willDie = true
         }
 
         return obj
@@ -70,11 +71,11 @@ const SmartV2 = {
 
     const directionWithFreeTiles = directionDistances.map(obj => ({
       ...obj,
-      freeTiles: SmartV2.getNoOfFreeTiles(translateDirection(head, obj.direction), obj.direction)
+      freeTiles: obj.willDie ? 0 : SmartV2.getNoOfFreeTiles(translateDirection(head, obj.direction), obj.direction)
     }))
 
-    console.log("Free tiles")
-    console.log({directionWithFreeTiles})
+    //console.log("Free tiles")
+    //console.log({directionWithFreeTiles})
 
     for (let d = 0; d < directionWithFreeTiles.length; d++) {
       if (directionWithFreeTiles[d].freeTiles > 3) return directionWithFreeTiles[d].direction
@@ -84,13 +85,13 @@ const SmartV2 = {
   },
 
   getNoOfFreeTiles: (newPos, myDirection) => {
-    console.log("Checking position:", newPos)
+    //console.log("Checking position:", newPos)
     // SnakeMap.highlightPosition(newPos.posX, newPos.posY)
 
     const patterns = [
-      ["forward", "forward", "forward", "forward", "forward"],
-      ["left", "right", "forward", "forward", "forward"],
-      ["right", "left", "forward", "forward", "forward"]
+      ["forward", "forward", "forward", "forward", "forward", "forward", "forward"],
+      ["left", "right", "forward", "forward", "forward", "forward", "forward"],
+      ["right", "left", "forward", "forward", "forward", "forward", "forward"]
     ]
 
     for (let i = 0; i < patterns.length; i++) {

@@ -32,7 +32,7 @@ const SnakeMap = {
         const square = $(document
           .createElement("span"))
           .addClass("square")
-          .text(`${i};${j}`)
+//          .text(`${i};${j}`)
 
         row.append(square)
       }

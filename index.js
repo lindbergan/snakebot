@@ -14,7 +14,7 @@ Game.initSnake({
   positions: [],
   name: "Snake 1",
   // human: true,
-  strategy: "smart-v1",
+  strategy: "smart-v2",
 })
 
 Game.initSnake({
@@ -26,14 +26,23 @@ Game.initSnake({
   strategy: "smart-v2",
 })
 
-// Game.initSnake({
-//   direction: 'up',
-//   color: '#bf6040bf',
-//   headColor: "#e64d19bf",
-//   positions: [],
-//   name: "Snake 3",
-//   strategy: "straight-and-stupid",
-// })
+Game.initSnake({
+  direction: 'up',
+  color: '#bf6040bf',
+  headColor: "#e64d19bf",
+  positions: [],
+  name: "Snake 3",
+  strategy: "smart-v2",
+})
+
+Game.initSnake({
+  direction: 'left',
+  color: '#bfb540bf',
+  headColor: "#e6d419bf",
+  positions: [],
+  name: "Snake 4",
+  strategy: "smart-v2",
+})
 
 SnakeMap.draw(Game)
 
