@@ -10,10 +10,12 @@
 }
 
 .square {
-  width: 1.5rem;
-  height: 1.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
   background-color: hsla(125, 50%, 50%, 0.749);
-  display: inline-block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .directions {

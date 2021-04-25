@@ -8,7 +8,8 @@ const SnakeMap = {
       const snakeCell = SnakeMap.getCell(posX, posY)
 
       // Show on board
-      snakeCell.css("background-color", snake.color)
+      if (i === 0) snakeCell.css("background-color", snake.headColor)
+      else snakeCell.css("background-color", snake.color)
     }
   },
 
@@ -31,6 +32,7 @@ const SnakeMap = {
         const square = $(document
           .createElement("span"))
           .addClass("square")
+          .text(`${i};${j}`)
 
         row.append(square)
       }
@@ -44,11 +46,26 @@ const SnakeMap = {
     }
   },
 
-  highlightPosition: (posX, posY) => {
-    const snakeCell = getCell(grid, posX, posY)
+  highlightPosition: (posX, posY, color="red") => {
+    const snakeCell = SnakeMap.getCell(posX, posY)
 
-      // Show on board
-      snakeCell.css("background-color", "red")
+    // Show on board
+    snakeCell.css("background-color", color)
+  },
+
+  removeHighlightedPosition: (posX, posY) => {
+    if (Game.tileHasSnake(posX, posY)) {
+      const snake = Game.snakes.find(s => s.positions
+        .find(pos => pos.posX === posX && pos.posY === posY)
+      )
+
+      if (snake) SnakeMap.placeSnake(snake)
+    } else {
+      const snakeCell = SnakeMap.getCell(posX, posY)
+
+      // Show green on board
+      snakeCell.css("background-color", "#40bf4abf")
+    }
   },
 }
 

@@ -5,101 +5,122 @@ const {
   translateDirection,
   convertRelativeDirection,
   getOppositeDirection,
+  deepClone,
 } = Utils
 
 const nrOfTilesToCheck = 5
 
 const SmartV2 = {
   getBestDirection: (Game, snake) => {
+    const head = snake.positions[0]
+    const myDirection = snake.direction
+
+    console.log("\n" +
+      "My head: " + JSON.stringify(head) + "\n" +
+      "My direction: " + myDirection)
+
+    const otherSnakes = Game.snakes
+      .filter(({ id, dead }) => !dead && id !== snake.id)
+      .map(snake => {
+        const enemyHead = snake.positions[0]
+        return {
+          snake,
+          distance: euclideanDistance(head, enemyHead)
+        }
+      })
+      .sort((a, b) => a.distance - b.distance)
+
+    // console.log("Other snakes")
+    // console.log({ otherSnakes })
+
+    const closestSnake = otherSnakes[0].snake
+    const enemyHead = closestSnake.positions[0]
+
     const directions = [
       "down",
       "up",
       "left",
-      "right"
+      "right",
     ]
 
-    const head = snake.positions[0]
-    const myDirection = snake.direction
-    const otherSnakes = Game.snakes.filter(({ id, dead }) => !dead && id !== snake.id)
-
-    const closestSnake = otherSnakes.reduce((a, b) => {
-      // Measure euclidean distance from my head to enemy head
-      const enemyHead = b.positions[0]
-      const obj = {
-        snake: b,
-        distance: euclideanDistance(head, enemyHead)
-      }
-
-      return a.distance < obj.distance ? a : obj
-    }, { snake: null, distance: Number.MAX_VALUE }).snake
-
-    const enemyHead = closestSnake.positions[0]
-
-    const closestDirection = directions
+    const directionDistances = directions
       .filter(d => d !== getOppositeDirection(snake.direction))
-      .reduce((a, b) => {
-      const maybePosition = translateDirection(head, b)
-      const obj = {
-        direction: b,
-        distance: euclideanDistance(maybePosition, enemyHead)
-      }
+      .map((direction) => {
+        const maybePosition = translateDirection(head, direction)
+        const obj = {
+          direction,
+          distance: euclideanDistance(maybePosition, enemyHead)
+        }
 
-      // Check if I can go there
-      if (!Game.isSquareFreeToMoveTo(maybePosition.posX, maybePosition.posY)) {
-        obj.distance += 999
-      }
+        // Check if I can go there
+        if (!Game.isSquareFreeToMoveTo(maybePosition.posX, maybePosition.posY)) {
+          obj.distance += 999
+        }
 
-      const freeTilesA = SmartV2.getNoOfFreeTiles(maybePosition, a.direction)
-      const freeTilesB = SmartV2.getNoOfFreeTiles(maybePosition, b)
+        return obj
+      })
+      .sort((a, b) => a.distance - b.distance)
 
-      // console.log({
-      //   noOfFreeTiles,
-      //   direction: b,
-      //   a,
-      //   obj,
-      //   myDirection
-      // })
+    //console.log("Closest distances")
+    //console.log(directionDistances)
 
-      const side1 = Math.pow(a.distance, 2) - freeTilesA
-      const side2 = Math.pow(obj.distance, 2) - freeTilesB
+    const closestDirection = directionDistances[0].direction
 
-      // console.log({
-      //   a: a.direction,
-      //   b,
-      //   side1,
-      //   side2,
-      // })
+    const directionWithFreeTiles = directionDistances.map(obj => ({
+      ...obj,
+      freeTiles: SmartV2.getNoOfFreeTiles(translateDirection(head, obj.direction), obj.direction)
+    }))
 
-      return side1 < side2 ? a : obj
-    }, { direction: null, distance: Number.MAX_VALUE }).direction
-    return closestDirection
+    console.log("Free tiles")
+    console.log({directionWithFreeTiles})
+
+    for (let d = 0; d < directionWithFreeTiles.length; d++) {
+      if (directionWithFreeTiles[d].freeTiles > 3) return directionWithFreeTiles[d].direction
+    }
+
+    return directionWithFreeTiles[0].direction
   },
 
-  getNoOfFreeTiles: (maybePosition, direction) => {
-    if (!direction) return -1
+  getNoOfFreeTiles: (newPos, myDirection) => {
+    console.log("Checking position:", newPos)
+    // SnakeMap.highlightPosition(newPos.posX, newPos.posY)
 
-    // Check x times ahead if good direction
-    const pillar = [
+    const patterns = [
       ["forward", "forward", "forward", "forward", "forward"],
-      ["left", "forward", "forward", "forward", "forward"],
-      ["right", "forward", "forward", "forward", "forward"],
+      ["left", "right", "forward", "forward", "forward"],
+      ["right", "left", "forward", "forward", "forward"]
     ]
-    var noOfFreeTiles = 0
-    for (let i = 0; i < pillar.length; i++) {
-      const path = pillar[i]
-      var pos = maybePosition
-      for (let j = 0; j < path.length; j++) {
-        pos = translateDirection(pos, convertRelativeDirection(direction, path[j]))
 
-        if (Game.isSquareFreeToMoveTo(pos.posX, pos.posY)) {
-          noOfFreeTiles += 1
+    for (let i = 0; i < patterns.length; i++) {
+      const path = patterns[i]
+      patterns[i] = Utils.deepClone({
+        free: 0,
+        patterns: patterns[i],
+        positionsChecked: [],
+      })
+
+      let actualDirection = myDirection
+      let actualPos = newPos
+      for (let j = 0; j < path.length; j++) {
+        const relativeDir = path[j]
+        const realDir = convertRelativeDirection(actualDirection, relativeDir)
+        actualDirection = realDir
+
+        const thePos = translateDirection(actualPos, realDir)
+        actualPos = thePos
+
+        // SnakeMap.highlightPosition(thePos.posX, thePos.posY, "yellow")
+
+        patterns[i].positionsChecked.push(thePos)
+        if (Game.isSquareFreeToMoveTo(thePos.posX, thePos.posY)) {
+          patterns[i].free += 1
         } else {
-          continue;
+          break;
         }
       }
     }
 
-    return noOfFreeTiles
+    return patterns.reduce((a, b) => a + b.free, 0)
   },
 }
 

@@ -7,6 +7,7 @@ const {
   changePosX,
   changePosY,
   getOppositeDirection,
+  euclideanDistance,
 } = Utils
 
 const uuidv4 = uuid.v4
@@ -26,7 +27,7 @@ const Game = {
     const posX = parseInt(Math.random() * (numSquares - 6)) + 3
     const posY = parseInt(Math.random() * (numSquares - 6)) + 3
 
-    return [posX, posY]
+    return { posX, posY }
   },
 
   addListeners: () => {
@@ -47,9 +48,12 @@ const Game = {
     for (let i = 0; i < startLength; i++) {
       if (i === 0) {
         // For head
-        const [ posX, posY ] = Game.getRandomPosition(SnakeMap.numSquares)
+        let pos = Game.getRandomPosition(SnakeMap.numSquares)
+        while(Game.snakes.length > 0 && Game.snakes.every(s => euclideanDistance(pos, s.positions[0]) < 6)) {
+          pos = Game.getRandomPosition(SnakeMap.numSquares)
+        }
 
-        snake.positions.push({ posX, posY })
+        snake.positions.push(pos)
       } else {
         const { posX, posY } = snake.positions[snake.positions.length - 1]
         const oppositeDirection = getOppositeDirection(snake.direction)
@@ -67,6 +71,7 @@ const Game = {
     snake.id = uuidv4()
 
     Game.snakes.push(snake)
+    console.log("Snake added on positions: ", snake.positions)
   },
 
   tileHasSnake: (posX, posY) => {
