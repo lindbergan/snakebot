@@ -7,15 +7,15 @@ window.SnakeMap = SnakeMap
 window.Utils = Utils
 
 /* Add snakes */
-// Game.initSnake({
-//   direction: 'right',
-//   color: '#8a40bfbf', // Purple
-//   positions: [],
-//   name: "Snake 1",
-//   // human: true,
-//   // strategy: "straight-and-stupid",
-//   strategy: "smart-v1",
-// })
+Game.initSnake({
+  direction: 'right',
+  color: '#8a40bfbf', // Purple
+  headColor: "#9019e6bf",
+  positions: [],
+  name: "Snake 1",
+  // human: true,
+  strategy: "smart-v1",
+})
 
 Game.initSnake({
   direction: 'down',
@@ -26,14 +26,14 @@ Game.initSnake({
   strategy: "smart-v2",
 })
 
-Game.initSnake({
-  direction: 'up',
-  color: '#bf6040bf',
-  headColor: "#e64d19bf",
-  positions: [],
-  name: "Snake 3",
-  strategy: "straight-and-stupid",
-})
+// Game.initSnake({
+//   direction: 'up',
+//   color: '#bf6040bf',
+//   headColor: "#e64d19bf",
+//   positions: [],
+//   name: "Snake 3",
+//   strategy: "straight-and-stupid",
+// })
 
 SnakeMap.draw(Game)
 

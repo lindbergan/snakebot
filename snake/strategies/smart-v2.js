@@ -30,6 +30,8 @@ const SmartV2 = {
       })
       .sort((a, b) => a.distance - b.distance)
 
+      if (otherSnakes.length === 0) return myDirection
+
     // console.log("Other snakes")
     // console.log({ otherSnakes })
 
