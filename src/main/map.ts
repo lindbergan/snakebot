@@ -168,7 +168,7 @@ export function printMatrix(matrix: Matrix, cellWidth: number = 3, cellHeight: n
   const newLine = () => process.stdout.write("\n")
 
 
-  for (let rowIndex = 0; rowIndex < matrix.rows.length; rowIndex++) {
+  for (let rowIndex = matrix.rows.length - 1; rowIndex >= 0; rowIndex--) {
     printNewLine()
 
     for (let h = 0; h < cellHeight; h++) {
@@ -181,7 +181,7 @@ export function printMatrix(matrix: Matrix, cellWidth: number = 3, cellHeight: n
       }
     }
 
-    if (rowIndex === matrix.rows.length - 1) printNewLine()
+    if (rowIndex === 0) printNewLine()
   }
 }
 

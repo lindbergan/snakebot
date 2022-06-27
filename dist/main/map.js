@@ -120,7 +120,7 @@ function printMatrix(matrix, cellWidth = 3, cellHeight = 3) {
         process.stdout.write(divider);
     };
     const newLine = () => process.stdout.write("\n");
-    for (let rowIndex = 0; rowIndex < matrix.rows.length; rowIndex++) {
+    for (let rowIndex = matrix.rows.length - 1; rowIndex >= 0; rowIndex--) {
         printNewLine();
         for (let h = 0; h < cellHeight; h++) {
             for (let colIndex = 0; colIndex < matrix.cols.length; colIndex++) {
@@ -131,7 +131,7 @@ function printMatrix(matrix, cellWidth = 3, cellHeight = 3) {
                     newLine();
             }
         }
-        if (rowIndex === matrix.rows.length - 1)
+        if (rowIndex === 0)
             printNewLine();
     }
 }

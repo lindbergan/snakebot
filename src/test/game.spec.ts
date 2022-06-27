@@ -47,4 +47,10 @@ describe('testing game file', () => {
       return expect(snake.positions.length).toBe(3)
     })
   })
+
+  test('should create several snakes', () => {
+    const game = new Game(10, 10, 2)
+
+    expect(game.snakes.length).toBe(2)
+  })
 })
