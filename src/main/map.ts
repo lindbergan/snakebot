@@ -28,18 +28,24 @@ class Cell {
 }
 
 class Row {
-  items: Cell[]
+  columns: Map<number, Cell>
 
   constructor(items: Cell[]) {
-    this.items = items
+    const columns = new Map()
+
+    items.forEach((item, index) => columns.set(index, item))
+    this.columns = columns
   }
 }
 
 class Column {
-  items: Cell[]
+  rows: Map<number, Cell>
 
   constructor(items: Cell[]) {
-    this.items = items
+    const rows = new Map()
+
+    items.forEach((item, index) => rows.set(index, item))
+    this.rows = rows
   }
 }
 
@@ -68,7 +74,7 @@ class Matrix {
     if (colIndex < 0 || colIndex > this.cols.length)
       throwInvalid("ColIndex out of bounds. ColIndex" + colIndex)
 
-    const item = this.rows[rowIndex].items.find(i => i.colIndex === colIndex)
+    const item = this.rows[rowIndex].columns.get(colIndex)
 
     if (item === undefined) return throwInvalid("Item was not found")
 
