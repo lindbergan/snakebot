@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.posEq = exports.getOppositeDirection = exports.translatePosition = exports.changePosY = exports.changePosX = exports.getRandomPosition = exports.getRandomDirection = exports.getRandomName = void 0;
+exports.posToString = exports.posEq = exports.getOppositeDirection = exports.translatePosition = exports.changePosY = exports.changePosX = exports.getRandomPosition = exports.getRandomDirection = exports.getRandomName = void 0;
 const game_1 = require("./game");
 function getRandomName() {
     return "Adrian" + Math.random();
@@ -64,3 +64,7 @@ function posEq(posA, posB) {
     return posA.x === posB.x && posA.y === posB.y;
 }
 exports.posEq = posEq;
+function posToString(pos) {
+    return `{ x: ${pos.x}, y: ${pos.y} }`;
+}
+exports.posToString = posToString;

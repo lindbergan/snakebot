@@ -96,6 +96,9 @@ function printMatrix(matrix, cellWidth = 3, cellHeight = 3) {
                     process.stdout.write(`  =   `);
                 }
             }
+            else if (cell.entry.type === "tile") {
+                printEmpty();
+            }
         };
         const divider = "|";
         // Start
@@ -138,10 +141,6 @@ class SnakeMap {
         this.width = width;
         this.height = height;
         this.matrix = createMatrix(width, height, snakes);
-    }
-    isValidPosition(pos) {
-        return pos.x >= 0 && pos.x < this.width &&
-            pos.y >= 0 && pos.y < this.height;
     }
     printMap() {
         printMatrix(this.matrix);

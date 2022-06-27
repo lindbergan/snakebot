@@ -31,14 +31,17 @@ export class Game {
   height: number
   map: SnakeMap
   snakes: Snake[]
+  startLength: number
 
   constructor(
     width: number = DEFAULTS.width,
     height: number = DEFAULTS.height,
-    nrOfSnakes: number = DEFAULTS.nrOfSnakes
+    nrOfSnakes: number = DEFAULTS.nrOfSnakes,
+    startLength: number = DEFAULTS.startLength,
   ) {
     this.width = width
     this.height = height
+    this.startLength = startLength
 
     this.snakes = Array.of(...new Array(nrOfSnakes)).map(() => this.createSnake())
     this.map = new SnakeMap(width, height, this.snakes)
@@ -55,23 +58,23 @@ export class Game {
     let positions: Position[] = []
 
     let tries = 0
-    while(positions.length < DEFAULTS.startLength) {
+    while(positions.length < this.startLength) {
       if (positions.length === 0) positions.push(getRandomPosition(this.width, this.height))
 
-      if (positions.length < DEFAULTS.startLength) {
+      if (positions.length < this.startLength) {
         if (positions.length === 0) throw Error("Positions length should not be 0 here.")
 
         const lastPos = positions.slice(-1)[0]
         const oppositeDirection = getOppositeDirection(direction)
         positions.push(translatePosition(lastPos, oppositeDirection))
       }
-      else {
-        // Reset and try again
-        if (positions.some(pos => !this.isValidPosition(pos))) positions = []
-      }
 
-      tries++
+      if (!positions.every(pos => this.isValidPosition(pos))) positions = []
+
+      tries += 1
     }
+
+    console.log("Took " + tries + " amt of tries")
 
     return positions
   }
@@ -86,13 +89,22 @@ export class Game {
     return this.getSnakeAtPosition(pos) !== undefined
   }
 
-  isValidPosition(pos: Position): boolean {
-    return !this.isSnakeAtPosition(pos) && this.map.isValidPosition(pos)
+  isValidPosition(pos: Position) {
+      return pos.x >= 0 && pos.x < this.width &&
+             pos.y >= 0 && pos.y < this.height
+  }
+
+  isPositionFreeToMoveTo(pos: Position): boolean {
+    return this.isValidPosition(pos) && !this.isSnakeAtPosition(pos)
   }
 
   start(): void {
     console.log("Starting game")
     console.log("-------------------")
+    console.log("Init snakes")
+
+    this.snakes.forEach(snake => snake.printInfo())
+
     console.log("Init map")
     this.map.printMap()
   }

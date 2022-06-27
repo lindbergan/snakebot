@@ -1,7 +1,7 @@
 import uuid from "uuid4"
 
 import { Direction, Position } from "./game"
-import { getRandomName } from "./util"
+import { getRandomName, posToString } from "./util"
 
 export class Snake {
   positions: Position[]
@@ -24,5 +24,16 @@ export class Snake {
     this.positions = positions
     this.head = positions[0]
     this.length = this.positions.length
+  }
+
+  printInfo() {
+    console.log(`Snake:
+      Name: ${this.name}
+      ID: ${this.id}
+      Head: ${posToString(this.head)}
+      Length: ${this.length}
+      Direction: ${this.direction}
+      Positions: ${this.positions.map(posToString).join(" ")}
+    `)
   }
 }

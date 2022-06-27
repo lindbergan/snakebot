@@ -19,5 +19,15 @@ class Snake {
         this.head = positions[0];
         this.length = this.positions.length;
     }
+    printInfo() {
+        console.log(`Snake:
+      Name: ${this.name}
+      ID: ${this.id}
+      Head: ${(0, util_1.posToString)(this.head)}
+      Length: ${this.length}
+      Direction: ${this.direction}
+      Positions: ${this.positions.map(util_1.posToString).join(" ")}
+    `);
+    }
 }
 exports.Snake = Snake;

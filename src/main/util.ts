@@ -63,3 +63,7 @@ export function posEq(posA: Position, posB: Position): boolean {
   return posA.x === posB.x && posA.y === posB.y
 }
 
+export function posToString(pos: Position): string {
+  return `{ x: ${pos.x}, y: ${pos.y} }`
+}
+
