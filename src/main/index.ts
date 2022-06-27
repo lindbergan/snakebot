@@ -1,7 +1,7 @@
 import { Game } from "./game"
 
-const WIDTH = 10, HEIGHT = 10, NR_OF_SNAKES = 4
+const WIDTH = 6, HEIGHT = 6, NR_OF_SNAKES = 4, START_LENGTH = 3
 
-const game = new Game(WIDTH, HEIGHT, NR_OF_SNAKES)
+const game = new Game(WIDTH, HEIGHT, NR_OF_SNAKES, START_LENGTH)
 
 game.start()

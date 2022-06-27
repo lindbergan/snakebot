@@ -30,7 +30,7 @@ export class Game {
   width: number
   height: number
   map: SnakeMap
-  snakes: Snake[]
+  snakes: Snake[] = []
   startLength: number
 
   constructor(
@@ -43,7 +43,10 @@ export class Game {
     this.height = height
     this.startLength = startLength
 
-    this.snakes = Array.of(...new Array(nrOfSnakes)).map(() => this.createSnake())
+    for (let i = 0; i < nrOfSnakes; i++) {
+      this.snakes.push(this.createSnake())
+    }
+
     this.map = new SnakeMap(width, height, this.snakes)
   }
 
@@ -69,7 +72,7 @@ export class Game {
         positions.push(translatePosition(lastPos, oppositeDirection))
       }
 
-      if (!positions.every(pos => this.isValidPosition(pos))) positions = []
+      if (!positions.every(pos => this.isPositionFreeToMoveTo(pos))) positions = []
 
       tries += 1
     }
