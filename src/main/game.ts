@@ -15,6 +15,13 @@ export enum Direction {
   DOWN = "down"
 }
 
+export const DIRECTION_VALUES = [
+  Direction.UP,
+  Direction.RIGHT,
+  Direction.DOWN,
+  Direction.LEFT
+]
+
 export type Position = {
   x: number,
   y: number
@@ -25,6 +32,7 @@ const DEFAULTS = {
   height: 6,
   nrOfSnakes: 1,
   startLength: 2,
+  intervalWait: 500
 }
 
 export class Game {
@@ -34,6 +42,8 @@ export class Game {
   snakes: Snake[] = []
   startLength: number
   tickNr: number
+  gameInterval: NodeJS.Timer | null = null
+  intervalWait: number = DEFAULTS.intervalWait
 
   constructor(
     width: number = DEFAULTS.width,
@@ -64,15 +74,18 @@ export class Game {
    * TEST ONLY
    * @param testContinue {boolean} - Test parameter to continue as you're doing
    */
-  step(testContinue: boolean = false): void {
+  step(print: boolean = false, testContinue: boolean = false): void {
     const snakes = this.snakes.map(snake => {
-      const dir = testContinue ? snake.direction : snake.move()
+      const dir = testContinue ? snake.direction : snake.move(this)
 
       return this.moveSnake(snake, dir)
     })
 
     this.map.updateMap(snakes)
     this.tickNr += 1
+    console.log("Tick: " + this.tickNr)
+
+    if (print) this.map.printMap()
   }
 
   moveSnake(snake: Snake, dir: Direction): Snake {
@@ -156,5 +169,25 @@ export class Game {
 
     console.log("Init map")
     this.map.printMap()
+
+    this.gameInterval = setInterval(() => {
+      const aliveSnakes = this.snakes.filter(s => s.alive)
+
+      if (aliveSnakes.length < 2) {
+        this.stop()
+      }
+      else {
+        this.step(true)
+      }
+    }, this.intervalWait)
+  }
+
+  stop(): void {
+    if (this.gameInterval) {
+      clearInterval(this.gameInterval)
+    }
+
+    console.log("Game has ended")
+    process.exit(0)
   }
 }

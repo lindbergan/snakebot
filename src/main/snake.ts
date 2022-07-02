@@ -1,7 +1,8 @@
 import uuid from "uuid4"
 
-import { Direction, Position } from "./game"
+import { Direction, Position, Game } from "./game"
 import { getRandomName, posToString } from "./util"
+import { Strategy, Strategies, StrategyMap } from "./strategies/strategies"
 
 export class Snake {
   positions: Position[]
@@ -11,10 +12,18 @@ export class Snake {
   name: string
   direction: Direction
   alive: boolean
+  strategy: Strategy
 
-  constructor(positions: Position[], direction: Direction, name?: string) {
+  constructor(
+    positions: Position[],
+    direction: Direction,
+    strategy?: Strategy,
+    name?: string) {
     if (name) this.name = name
     this.name = getRandomName()
+
+    if (strategy) this.strategy = strategy
+    else this.strategy = StrategyMap[Strategies.STRAIGHT_AND_STUPID]
 
     this.id = uuid()
 
@@ -28,8 +37,8 @@ export class Snake {
     this.alive = true
   }
 
-  move(): Direction {
-    return this.direction
+  move(game: Game): Direction {
+    return this.strategy.move(this, game)
   }
 
   printInfo() {
@@ -38,6 +47,7 @@ export class Snake {
       ID: ${this.id}
       Head: ${posToString(this.head)}
       Alive: ${this.alive}
+      Strategy: ${this.strategy.type}
       Direction: ${this.direction}
       Length: ${this.length}
       Positions: ${this.positions.map(posToString).join(" ")}

@@ -88,7 +88,9 @@ export function createMatrix(width: number, height: number, snakes: Snake[]): Ma
   for (let rowIndex = 0; rowIndex < width; rowIndex++) {
     for (let colIndex = 0; colIndex < height; colIndex++) {
       const getContent = (pos: Position): CellContent => {
-        const snake = snakes.find(snake => {
+        const snake = snakes
+          .filter(s => s.alive)
+          .find(snake => {
           return snake.positions.some(p => p.x === pos.x && p.y === pos.y)
         })
   

@@ -102,7 +102,7 @@ describe('testing game file', () => {
 
     const game = new Game(5, 5, 1, 3, [testSnake1, testSnake2])
 
-    game.step(true)
+    game.step(false, true)
 
     const movedSnake1 = game.getSnake(testSnake1.id)
     const movedSnake2 = game.getSnake(testSnake2.id)
@@ -117,23 +117,36 @@ describe('testing game file', () => {
     const game = new Game(10, 10, 1, 3, [testSnake1])
 
     // Tick 1
-    game.step(true)
+    game.step(false, true)
 
     // Tick 2
-    game.step(true)
+    game.step(false, true)
 
     // Tick 3
-    game.step(true)
+    game.step(false, true)
 
     // Tick 4
-    game.step(true)
+    game.step(false, true)
 
     // Tick 5
-    game.step(true)
+    game.step(false, true)
 
     const movedSnake1 = game.getSnake(testSnake1.id)
 
     expect(movedSnake1?.alive).toBeTruthy
     expect(movedSnake1?.positions.length).toBe(4)
+  })
+
+  test('should die choosing a direction into itself', () => {
+    let testSnake1 = new Snake([{ x: 3, y: 3},{ x: 2, y: 3},{ x: 1, y: 3}], Direction.UP)
+
+    const game = new Game(10, 10, 1, 3, [testSnake1])
+
+    game.moveSnake(testSnake1, Direction.DOWN)
+    game.map.updateMap(game.snakes)
+
+    const movedSnake1 = game.getSnake(testSnake1.id)
+
+    expect(movedSnake1?.alive).toBeFalsy()
   })
 })
