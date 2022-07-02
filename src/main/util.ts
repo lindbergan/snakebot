@@ -1,6 +1,6 @@
 import { Direction, Position } from "./game"
 
-export function getRandomName(): String {
+export function getRandomName(): string {
   return "Adrian" + Math.random()
 }
 
@@ -22,8 +22,8 @@ export function getRandomPosition(width: number, height: number): Position {
 
 export function changePosX(direction: Direction): number {
   switch(direction) {
-    case Direction.RIGHT: return 1
-    case Direction.LEFT: return -1
+    case Direction.UP: return 1
+    case Direction.DOWN: return -1
 
     default: return 0
   }
@@ -31,8 +31,8 @@ export function changePosX(direction: Direction): number {
 
 export function changePosY(direction: Direction): number {
   switch(direction) {
-    case Direction.UP: return 1
-    case Direction.DOWN: return -1
+    case Direction.LEFT: return -1
+    case Direction.RIGHT: return 1
 
     default: return 0
   }
@@ -65,5 +65,11 @@ export function posEq(posA: Position, posB: Position): boolean {
 
 export function posToString(pos: Position): string {
   return `{ x: ${pos.x}, y: ${pos.y} }`
+}
+
+export function deepClone(object: any) {
+  if (typeof object !== "object") throw new Error("Trying to clone a nonjson")
+
+  return JSON.parse(JSON.stringify(object))
 }
 

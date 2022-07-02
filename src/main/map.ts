@@ -126,7 +126,7 @@ function translateCellToPosition(cell: Cell): Position {
 }
 
 export function printMatrix(matrix: Matrix, cellWidth: number = 3, cellHeight: number = 3): void {
-  const printNewLine = () => console.log([...Array.of(...new Array(matrix.cols.length)).map(() => [...Array.of(...new Array(cellWidth + 9)).map(() => "-")].join(""))].join(""))
+  const printNewLine = () => process.stdout.write([...Array.of(...new Array(matrix.cols.length)).map(() => [...Array.of(...new Array(cellWidth + 9)).map(() => "-")].join(""))].join("") + "\n")
   const printCell = (
     cell: Cell,
     coords: boolean = false,
@@ -189,6 +189,10 @@ export function printMatrix(matrix: Matrix, cellWidth: number = 3, cellHeight: n
 
     if (rowIndex === 0) printNewLine()
   }
+
+  process.stdout.write("\t\tUp: 1\n")
+  process.stdout.write("\tLeft: -1\tRight: 1\n")
+  process.stdout.write("\t\tDown: -1\n")
 }
 
 export class SnakeMap {
@@ -200,6 +204,10 @@ export class SnakeMap {
     this.width = width
     this.height = height
     this.matrix = createMatrix(width, height, snakes)
+  }
+
+  updateMap(snakes: Snake[]) {
+    this.matrix = createMatrix(this.width, this.height, snakes)
   }
 
   printMap() {

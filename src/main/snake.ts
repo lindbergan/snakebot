@@ -7,11 +7,12 @@ export class Snake {
   positions: Position[]
   head: Position
   length: number
-  id: String
-  name: String
+  id: string
+  name: string
   direction: Direction
+  alive: boolean
 
-  constructor(positions: Position[], direction: Direction, name?: String) {
+  constructor(positions: Position[], direction: Direction, name?: string) {
     if (name) this.name = name
     this.name = getRandomName()
 
@@ -24,16 +25,22 @@ export class Snake {
     this.positions = positions
     this.head = positions[0]
     this.length = this.positions.length
+    this.alive = true
+  }
+
+  move(): Direction {
+    return this.direction
   }
 
   printInfo() {
-    console.log(`Snake:
+    process.stdout.write(`Snake:
       Name: ${this.name}
       ID: ${this.id}
       Head: ${posToString(this.head)}
-      Length: ${this.length}
+      Alive: ${this.alive}
       Direction: ${this.direction}
+      Length: ${this.length}
       Positions: ${this.positions.map(posToString).join(" ")}
-    `)
+    \n`)
   }
 }

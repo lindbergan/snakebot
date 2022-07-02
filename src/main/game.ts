@@ -5,6 +5,7 @@ import {
   getRandomPosition,
   getOppositeDirection,
   translatePosition,
+  deepClone
 } from "./util"
 
 export enum Direction {
@@ -32,23 +33,68 @@ export class Game {
   map: SnakeMap
   snakes: Snake[] = []
   startLength: number
+  tickNr: number
 
   constructor(
     width: number = DEFAULTS.width,
     height: number = DEFAULTS.height,
     nrOfSnakes: number = DEFAULTS.nrOfSnakes,
     startLength: number = DEFAULTS.startLength,
+
+    // Test only
+    testSnakes: Snake[] = []
   ) {
     this.width = width
     this.height = height
     this.startLength = startLength
 
-    for (let i = 0; i < nrOfSnakes; i++) {
-      this.snakes.push(this.createSnake())
+    if (testSnakes.length === 0) {
+      for (let i = 0; i < nrOfSnakes; i++) {
+        this.snakes.push(this.createSnake())
+      }
+    } else {
+      this.snakes = testSnakes
     }
 
     this.map = new SnakeMap(width, height, this.snakes)
+    this.tickNr = 1
   }
+
+  /**
+   * TEST ONLY
+   * @param testContinue {boolean} - Test parameter to continue as you're doing
+   */
+  step(testContinue: boolean = false): void {
+    const snakes = this.snakes.map(snake => {
+      const dir = testContinue ? snake.direction : snake.move()
+
+      return this.moveSnake(snake, dir)
+    })
+
+    this.map.updateMap(snakes)
+    this.tickNr += 1
+  }
+
+  moveSnake(snake: Snake, dir: Direction): Snake {
+    const head: Position = deepClone(snake.head)
+    const newHead = translatePosition(head, dir)
+
+    if (this.isPositionFreeToMoveTo(newHead)) {
+      const lastTail = snake.positions[snake.positions.length - 1]
+      snake.positions = [newHead].concat(snake.positions.slice(0, snake.positions.length - 1))
+      snake.head = newHead
+
+      if (this.tickNr % 3 === 0) snake.positions.push(lastTail)
+    } else {
+      snake.alive = false
+    }
+
+    return snake
+  }
+
+  getSnake(id: string): Snake | undefined {
+    return this.snakes.find(snake => snake.id === id)
+  } 
 
   createSnake(): Snake {
     const direction = getRandomDirection()

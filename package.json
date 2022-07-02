@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "tsc -p tsconfig.json && node dist/main/index.js",
     "hotreload": "nodemon --exec 'yarn run dev' --watch src/main --ext ts",
-    "test": "jest"
+    "test": "jest --silent"
   },
   "dependencies": {
     "uuid4": "^2.0.2"
