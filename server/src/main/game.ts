@@ -68,7 +68,13 @@ export class Game {
         this.snakes.push(this.createSnake())
       }
     } else {
-      this.snakes = testSnakes
+      this.snakes = testSnakes.map(s => {
+        const positions = s.positions.length === 0 ?
+          this.getRandomSnakeStartPositions(s.direction) :
+          s.positions
+
+        return new Snake(positions, s.direction, s.strategy)
+      })
     }
     this.testContinue = testContinue
 
@@ -87,9 +93,9 @@ export class Game {
     const snakes = this.snakes
       .filter(snake => snake.alive)
       .map(snake => {
-      const dir = testContinue ? snake.direction : snake.move(this)
+        const dir = testContinue ? snake.direction : snake.move(this)
 
-      return this.moveSnake(snake, dir)
+        return this.moveSnake(snake, dir)
     })
 
     this.map.updateMap(snakes, this.socket)
@@ -157,7 +163,7 @@ export class Game {
           if (range < closest) closest = range
         }
 
-        return closest > (this.width / 3)
+        return closest > (this.width / 2)
       })) {
         positions = []
       }

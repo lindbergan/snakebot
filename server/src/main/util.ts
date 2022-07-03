@@ -1,9 +1,5 @@
 import { Direction, Position } from "./game"
 
-export function getRandomName(): string {
-  return "Adrian" + Math.random()
-}
-
 export function getRandomDirection(): Direction {
   const rnd = Math.random()
 

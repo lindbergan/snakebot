@@ -8,8 +8,6 @@ export const StraightAndStupid: Strategy = {
   move(snake: Snake, game: Game): Direction {
     const directions = [...new Set([snake.direction].concat(DIRECTION_VALUES))]
 
-    if (!snake.alive) throw new Error("Cannot move a dead snake")
-
     // Continue until you have to turn
     for (let i = 0; i < directions.length; i++) {
       if (game.isPositionFreeToMoveTo(translatePosition(snake.head, directions[i]))) {

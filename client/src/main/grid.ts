@@ -37,30 +37,12 @@ const Colors: SnakeColor[] = [
   Green
 ]
 
-type PositionJson = {
+type Position = {
   x: number,
   y: number
 }
 
-type SnakeCellJson = {
-  entry: {
-    type: string,
-    snake: {
-      id: string,
-      head: PositionJson
-    }
-  }
-}
-
-type RowJson = {
-  columns: Map<number, SnakeCellJson>
-}
-
-type MatrixJson = {
-  rows: RowJson[]
-}
-
-function posEq(posA: PositionJson, posB: PositionJson): boolean {
+function posEq(posA: Position, posB: Position): boolean {
   return posA.x === posB.x && posA.y === posB.y
 }
 
@@ -73,11 +55,17 @@ export class Grid {
     this.el = $(id)
   }
 
+  showGrid() {
+    $("#loader").css("display", "none")
+    this.el.css("display", "flex")
+  }
+
   paint(jsonStr: string): void {
     if (this.el.length === 0) {
       throw new Error("Grid is undefined")
     }
-    $("#loader").css("display", "none")
+
+    this.showGrid()
 
     // Clear previous tick
     this.el.empty()
@@ -89,8 +77,6 @@ export class Grid {
       height,
       items,
      } = json
-
-     // console.log(items)
 
      let iter = 0
 

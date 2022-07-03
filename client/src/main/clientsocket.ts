@@ -7,16 +7,17 @@ export class SnakeSocket {
   constructor(url: string, grid: Grid) {
     const interval = setInterval(() => {
       if (this.ws && this.ws.readyState === 1) {
+        // Ready to intercept
+        this.ws.send(JSON.stringify({
+          ready: true
+        }))
+
         clearInterval(interval)
-        this.setListeners()
+        this.setListeners.bind(this)()
       } else {
         this.ws = new WebSocket(url)
-
-        if (this.ws && this.ws.readyState === 1) {
-          window.location.reload()
-        }
       }
-    }, 1000)
+    }, 250)
     this.grid = grid
   }
 
@@ -25,6 +26,7 @@ export class SnakeSocket {
       this.ws.addEventListener("open", this.onOpen.bind(this))
       this.ws.addEventListener("message", this.onMessage.bind(this))
       this.ws.addEventListener("close", this.onClose.bind(this))
+      this.ws.addEventListener("error", this.onError.bind(this))
     }
   }
   
@@ -33,12 +35,15 @@ export class SnakeSocket {
   }
 
   onMessage(event: any) {
-    console.log("Client got a message")
-
     this.grid.paint(event.data)
   }
 
   onClose(event: any) {
     console.log("Socket closed")
+  }
+
+  onError(event: any) {
+    console.log("Error")
+    console.log(event)
   }
 } 

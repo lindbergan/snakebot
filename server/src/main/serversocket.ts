@@ -1,22 +1,43 @@
 import { SnakeMap } from "./map"
-import { createServer, Server } from "http"
 import { WebSocket } from "ws"
 import uuid4 from "uuid4"
+import { Game } from "./game"
+
+let lastMsg: SnakeMap | null = null
 
 export class ServerSocket {
   clients: Map<String, WebSocket>
+  game: Game
 
-  constructor() {
+  constructor(game: Game) {
     const wss = new WebSocket.Server({
       port: 8081
     })
 
+    this.game = game
+
     const clients = new Map()
     this.clients = clients
 
-    wss.on("connection", (ws: WebSocket, req) => {
+    wss.on("connection", (ws: WebSocket) => {
       const id = uuid4()
       clients.set(id, ws)
+
+      ws.on("message", (data) => {
+        const body = JSON.parse(data.toString("utf-8"))
+
+        // console.log(body)
+
+        if (body.ready && lastMsg !== null) this.updateMap(lastMsg)
+        else {
+          switch(body.command) {
+            case "step": {
+              this.game.step()
+              break
+            }
+          }
+        }
+      })
     })
 
     wss.on("message", (msg) => {
@@ -29,6 +50,7 @@ export class ServerSocket {
   }
 
   updateMap(map: SnakeMap): void {
+    lastMsg = map
     console.log("Updating map in server")
 
     if (this.clients.size > 0) {
