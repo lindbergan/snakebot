@@ -77,6 +77,7 @@ export class Grid {
     if (this.el.length === 0) {
       throw new Error("Grid is undefined")
     }
+    $("#loader").css("display", "none")
 
     // Clear previous tick
     this.el.empty()

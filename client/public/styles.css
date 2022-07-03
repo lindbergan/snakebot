@@ -1,7 +1,16 @@
+html, body {
+  padding: 0;
+  margin: 0;
+  height: 100vh;
+}
+
 #grid {
   display: flex;
   flex-direction: column;
   gap: 0.75em;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
 .row {
@@ -17,3 +26,66 @@
   align-items: center;
   justify-content: center;
 }
+
+.d-flex {
+  display: flex;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.align-center {
+  align-items: center;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.full-height {
+  height: 100vh;
+}
+
+/* CSS Loader */
+#loader h4 {
+  font-size: 1.5rem;
+  font-family: fantasy;
+}
+
+.lds-ring {
+  display: inline-block;
+  position: relative;
+  width: 80px;
+  height: 80px;
+}
+.lds-ring div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border: 5px solid black;
+  border-radius: 50%;
+  animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: black transparent transparent transparent;
+}
+.lds-ring div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+.lds-ring div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+.lds-ring div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+@keyframes lds-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+/* CSS Loader */
