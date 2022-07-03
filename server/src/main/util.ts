@@ -67,6 +67,12 @@ export function posToString(pos: Position): string {
   return `{ x: ${pos.x}, y: ${pos.y} }`
 }
 
+export function euclideanDistance(pos1: Position, pos2: Position) {
+  const a = Math.pow(pos1.x - pos2.x, 2)
+  const b = Math.pow(pos1.y - pos2.y, 2)
+  return Math.sqrt(a + b)
+}
+
 export function deepClone(object: any) {
   if (typeof object !== "object") throw new Error("Trying to clone a nonjson")
 

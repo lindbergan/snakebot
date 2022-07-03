@@ -1,12 +1,13 @@
 import { Position } from "./game"
 import { Snake } from "./snake"
+import { ServerSocket } from "./serversocket"
 import { posEq } from "./util"
 
 interface CellContent {
   type: string
 }
 
-interface SnakeContent extends CellContent {
+export interface SnakeContent extends CellContent {
   snake: Snake
   type: "snake"
 }
@@ -49,7 +50,7 @@ class Column {
   }
 }
 
-class Matrix {
+export class Matrix {
   rows: Row[]
   cols: Column[]
 
@@ -98,7 +99,7 @@ export function createMatrix(width: number, height: number, snakes: Snake[]): Ma
           return {
             type: "snake",
             snake
-          } as  SnakeContent
+          } as SnakeContent
         }
         else {
           return {
@@ -208,11 +209,46 @@ export class SnakeMap {
     this.matrix = createMatrix(width, height, snakes)
   }
 
-  updateMap(snakes: Snake[]) {
+  updateMap(snakes: Snake[], socket: ServerSocket | undefined = undefined) {
     this.matrix = createMatrix(this.width, this.height, snakes)
+
+    if (socket !== undefined) {
+      socket.updateMap(this)
+    }
+  }
+
+  getMatrix(): Matrix {
+    return this.matrix
   }
 
   printMap() {
     printMatrix(this.matrix)
+  }
+
+  toJson(): string {
+    // @ts-ignore on
+
+    const obj = {
+      width: this.width,
+      height: this.height,
+
+      items: this.matrix.rows.reduce((a, b) => {
+
+        const list: Cell[] = []
+        for (let key of b.columns.keys()) {
+          const val = b.columns.get(key)
+          if (val) list.push(val)
+        }
+  
+        
+        // @ts-ignore off
+        return a.concat(list.map(cell => ({
+          type: cell.entry.type,
+          snake: cell.entry.type === "snake" ? (cell.entry as SnakeContent).snake : undefined
+        })))
+      }, [])
+    }
+
+    return JSON.stringify(obj)
   }
 }

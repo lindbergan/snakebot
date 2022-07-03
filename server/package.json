@@ -4,17 +4,22 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "dev": "tsc -p tsconfig.json && node dist/main/index.js",
-    "hotreload": "nodemon --exec 'yarn run dev' --watch src/main --ext ts",
-    "test": "jest --silent"
+    "dev": "tsc -p tsconfig.json && node ./dist/main/index.js",
+    "hotreload": "nodemon --exec 'yarn run dev' --watch ./src/main --ext ts",
+    "test": "jest --silent",
+    "test:debug": "jest"
   },
   "dependencies": {
-    "uuid4": "^2.0.2"
+    "http": "^0.0.1-security",
+    "socket.io": "^4.5.1",
+    "uuid4": "^2.0.2",
+    "ws": "^8.8.0"
   },
   "devDependencies": {
     "@types/jest": "^28.1.3",
     "@types/node": "^18.0.0",
     "@types/uuid4": "^2.0.0",
+    "@types/ws": "^8.5.3",
     "jest": "^28.1.1",
     "nodemon": "^2.0.18",
     "ts-jest": "^28.0.5",

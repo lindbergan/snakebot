@@ -1,11 +1,13 @@
 import { SnakeMap } from "./map"
 import { Snake } from "./snake"
+import { ServerSocket } from "./serversocket"
 import {
   getRandomDirection,
   getRandomPosition,
   getOppositeDirection,
   translatePosition,
-  deepClone
+  deepClone,
+  euclideanDistance
 } from "./util"
 
 export enum Direction {
@@ -44,6 +46,8 @@ export class Game {
   tickNr: number
   gameInterval: NodeJS.Timer | null = null
   intervalWait: number = DEFAULTS.intervalWait
+  socket: ServerSocket | undefined = undefined
+  private testContinue: boolean = false
 
   constructor(
     width: number = DEFAULTS.width,
@@ -52,7 +56,8 @@ export class Game {
     startLength: number = DEFAULTS.startLength,
 
     // Test only
-    testSnakes: Snake[] = []
+    testSnakes: Snake[] = [],
+    testContinue: boolean = false
   ) {
     this.width = width
     this.height = height
@@ -65,6 +70,7 @@ export class Game {
     } else {
       this.snakes = testSnakes
     }
+    this.testContinue = testContinue
 
     this.map = new SnakeMap(width, height, this.snakes)
     this.tickNr = 1
@@ -72,20 +78,29 @@ export class Game {
 
   /**
    * TEST ONLY
+   * @param print {boolean} - Test parameter to continue as you're doing
    * @param testContinue {boolean} - Test parameter to continue as you're doing
    */
-  step(print: boolean = false, testContinue: boolean = false): void {
-    const snakes = this.snakes.map(snake => {
+  step(
+    print: boolean = false,
+    testContinue: boolean = false): void {
+    const snakes = this.snakes
+      .filter(snake => snake.alive)
+      .map(snake => {
       const dir = testContinue ? snake.direction : snake.move(this)
 
       return this.moveSnake(snake, dir)
     })
 
-    this.map.updateMap(snakes)
+    this.map.updateMap(snakes, this.socket)
     this.tickNr += 1
     console.log("Tick: " + this.tickNr)
 
     if (print) this.map.printMap()
+  }
+
+  setSocket(socket: ServerSocket) {
+    this.socket = socket
   }
 
   moveSnake(snake: Snake, dir: Direction): Snake {
@@ -132,6 +147,20 @@ export class Game {
       }
 
       if (!positions.every(pos => this.isPositionFreeToMoveTo(pos))) positions = []
+      if (!positions.every(pos => {
+        if (this.snakes.length === 0) return true
+        let closest = euclideanDistance(this.snakes[0].head, pos)
+        
+        for (let s of this.snakes) {
+          const range = euclideanDistance(this.snakes[0].head, pos)
+
+          if (range < closest) closest = range
+        }
+
+        return closest > (this.width / 3)
+      })) {
+        positions = []
+      }
 
       tries += 1
     }
@@ -160,7 +189,7 @@ export class Game {
     return this.isValidPosition(pos) && !this.isSnakeAtPosition(pos)
   }
 
-  start(): void {
+  start(print?: boolean): void {
     console.log("Starting game")
     console.log("-------------------")
     console.log("Init snakes")
@@ -168,16 +197,16 @@ export class Game {
     this.snakes.forEach(snake => snake.printInfo())
 
     console.log("Init map")
-    this.map.printMap()
+    if (print) this.map.printMap()
 
     this.gameInterval = setInterval(() => {
       const aliveSnakes = this.snakes.filter(s => s.alive)
 
-      if (aliveSnakes.length < 2) {
+      if (!this.testContinue && aliveSnakes.length < 2) {
         this.stop()
       }
       else {
-        this.step(true)
+        this.step(print)
       }
     }, this.intervalWait)
   }

@@ -1,4 +1,4 @@
-import { translatePosition } from '../main/util';
+import { posEq, translatePosition } from '../main/util';
 import { Position } from "../main/game"
 import { Direction } from "../main/game"
 
@@ -37,5 +37,13 @@ describe('testing util file', () => {
     const shouldBe: Position = { x: 0, y: 1 }
 
     expect(translatePosition(pos, direction)).toStrictEqual(shouldBe)
+  })
+
+  test('posEq', () => {
+    const pos: Position = { x: 1, y: 1 }
+
+    const shouldBe: Position = { x: 1, y: 1 }
+
+    expect(posEq(pos, shouldBe)).toBeTruthy()
   })
 })
