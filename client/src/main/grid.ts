@@ -78,6 +78,8 @@ export class Grid {
       snakes
     } = json
 
+    console.log(snakes)
+
     const {
       width,
       height,

@@ -1,4 +1,4 @@
-import { Direction, Game, DIRECTION_VALUES } from "../game"
+import { Direction, Game, DIRECTION_VALUES, Position } from "../game"
 import { Snake } from "../snake"
 import {
   translatePosition,
@@ -14,7 +14,44 @@ type SnakeRangeComparison = {
 
 type DirectionRangeComparison = {
   direction: Direction | null,
-  range: number
+  range: number,
+  freeTiles: number
+}
+
+const countFreeTiles = (snake: Snake, game: Game): number => {
+  let freeTiles = 0
+
+  const getDirections = (direction: Direction, head: Position) => {
+    return DIRECTION_VALUES
+      .filter(d => d !== getOppositeDirection(direction))
+      .filter(d => game.isPositionFreeToMoveTo(translatePosition(head, d)))
+  }
+
+  const handler = (direction: Direction, head: Position): [Direction[], number] => {
+    const originalDirections = getDirections(direction, head)
+
+    if (originalDirections.length === 0) return [[], 0]
+
+    return [ originalDirections, originalDirections.length ]
+  }
+
+  for (let i = 0; i < 5; i++) {
+    let testPos = snake.head
+
+    const [ directions, free ] = handler(snake.direction, testPos)
+
+    freeTiles += free
+
+    for (let direction of directions) {
+      const position = translatePosition(testPos, direction)
+
+      const [ dirs, frees ] = handler(direction, position)
+
+      freeTiles += frees
+    }
+  }
+
+  return freeTiles
 }
 
 export const SmartV1: Strategy = {
@@ -54,26 +91,22 @@ export const SmartV1: Strategy = {
 
     let closestDirection: DirectionRangeComparison = {
       direction: null,
-      range: 9999
+      range: 9999,
+      freeTiles: -1
     }
 
     for (let direction of directions) {
       const maybePosition = translatePosition(head, direction)
       const possible = game.isPositionFreeToMoveTo(maybePosition)
       const range = possible ? euclideanDistance(maybePosition, enemyHead) : 9999
-
-      console.log({ direction, range })
+      const freeTiles = countFreeTiles(snake, game)
 
       if (closestDirection === null) {
-        closestDirection = { direction, range }
+        closestDirection = { direction, range, freeTiles }
       } else if (range < closestDirection.range) {
-        closestDirection = { direction, range }
+        closestDirection = { direction, range, freeTiles }
       }
     }
-
-    console.log("Chose")
-    console.log(closestDirection)
-    console.log("------")
 
     if (closestDirection.direction === null) throw new Error("Closest direction should have been found.")
     

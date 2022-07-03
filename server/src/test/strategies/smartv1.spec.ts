@@ -7,11 +7,31 @@ import { translatePosition } from "../../main/util"
 describe('testing strategy smart v1', () => {
   test('should ', () => {
     const testSnake1 = new Snake([
-      { x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 }, { x: 3, y: 6 }
+      { x: 7, y: 14 },
+      { x: 6, y: 14 },
+      { x: 6, y: 15 },
+      { x: 6, y: 16 },
+      { x: 6, y: 17 },
+      { x: 6, y: 18 },
+      { x: 6, y: 19 },
+      { x: 7, y: 19 },
+      { x: 7, y: 18 },
+      { x: 7, y: 17 },
+      { x: 7, y: 16 }
     ], Direction.UP, StrategyMap["smart-v1"])
 
     const testSnake2 = new Snake([
-      { x: 8, y: 5 }, { x: 7, y: 5 }, { x: 6, y: 5 }, { x: 5, y: 5 }
+      { x: 8, y: 14 },
+      { x: 9, y: 14 },
+      { x: 9, y: 15 },
+      { x: 9, y: 16 },
+      { x: 9, y: 17 },
+      { x: 9, y: 18 },
+      { x: 9, y: 19 },
+      { x: 8, y: 19 },
+      { x: 8, y: 18 },
+      { x: 8, y: 17 },
+      { x: 8, y: 16 }
     ], Direction.UP, StrategyMap["smart-v1"])
 
     const game = new Game(20, 20, 2, 4, [
@@ -24,6 +44,7 @@ describe('testing strategy smart v1', () => {
 
     game.step()
 
-    game.snakes.forEach(s => s.printInfo())
+    expect(game.snakes[0].move(game)).toStrictEqual(Direction.LEFT)
+    expect(game.snakes[0].move(game)).toStrictEqual(Direction.LEFT)
   })
 })
