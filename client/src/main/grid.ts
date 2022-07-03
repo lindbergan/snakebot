@@ -7,13 +7,13 @@ export type SnakeColor = {
 }
 
 export const Purple: SnakeColor = {
-  head: "#9019e6bf",
+  head: "#9019e6f7",
   tail: '#8a40bfbf',
   description: "Purple"
 }
 
 export const Blue: SnakeColor = {
-  head: "#194ce6bf",
+  head: "#194ce6e8",
   tail: '#4060bfbf',
   description: "Blue"
 }
@@ -24,17 +24,17 @@ export const Orange: SnakeColor = {
   description: "Orange"
 }
 
-export const Green: SnakeColor = {
-  head: "#e6d419bf",
-  tail: '#bfb540bf',
-  description: "Green"
+export const Red: SnakeColor = {
+  head: "#ef1f1fbf",
+  tail: '#ef1f1f85',
+  description: "Orange"
 }
 
 const Colors: SnakeColor[] = [
   Purple,
   Blue,
   Orange,
-  Green
+  Red
 ]
 
 type Position = {
@@ -144,9 +144,14 @@ export class Grid {
         .createElement("span"))
         .addClass("square")
 
-      const color = this.colorMap.get(snake.id)
+      let color = this.colorMap.get(snake.id)
 
       if (color) {
+        snakeSquare.css("background-color", color.head)
+      } else {
+        color = this.getAvailableSnakeColor() 
+        this.colorMap.set(snake.id, color)
+
         snakeSquare.css("background-color", color.head)
       }
 
@@ -162,6 +167,10 @@ export class Grid {
         snakeRow.append($(window.document
           .createElement("span"))
           .text(`{ x: ${snake.head.x}, y: ${snake.head.y} }`)
+          .addClass("text"))
+        snakeRow.append($(window.document
+          .createElement("span"))
+          .text(snake.id)
           .addClass("text"))
 
       $("#info #snakes").append(snakeRow)

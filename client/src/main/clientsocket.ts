@@ -5,19 +5,39 @@ export class SnakeSocket {
   grid: Grid
 
   constructor(url: string, grid: Grid) {
-    const interval = setInterval(() => {
-      if (this.ws && this.ws.readyState === 1) {
-        // Ready to intercept
-        this.ws.send(JSON.stringify({
-          ready: true
-        }))
+    let interval: number
 
-        clearInterval(interval)
+    // @ts-ignore
+    window.clearInterval(window.interval)
+
+    const promise = async () => {
+      return new Promise<any>(res => {
+        interval = window.setInterval(() => {
+          if (this.ws && this.ws.readyState === 1) {
+            this.ws.send(JSON.stringify({
+              ready: true
+            }))
+            res(true)
+          } else {
+            this.ws = new WebSocket(url)
+          }
+        }, 250)
+
+        // @ts-ignore
+        window.interval = interval
+      })
+    }
+
+    promise.bind(this)()
+      .then(() => {
+        // Ready to intercept
+        window.clearInterval(interval)
         this.setListeners.bind(this)()
-      } else {
-        this.ws = new WebSocket(url)
-      }
-    }, 250)
+      })
+      .finally(() => {
+      window.clearInterval(interval)
+    })
+
     this.grid = grid
   }
 

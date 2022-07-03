@@ -1,15 +1,21 @@
 import { Game, Direction } from "./game"
 import { ServerSocket } from "./serversocket"
 import { Snake } from "./snake"
-import { StrategyMap } from "./strategies/strategies"
+import { Strategies, StrategyMap } from "./strategies/strategies"
 
 const WIDTH = 20,
   HEIGHT = 20,
   NR_OF_SNAKES = 2,
   START_LENGTH = 4,
   TEST_SNAKES: Snake[] = [
-    // new Snake(undefined, undefined, StrategyMap["smart-v1"]),
-    // new Snake(undefined, undefined, StrategyMap["straight-and-stupid"]),
+    new Snake([
+      { x: 13, y: 5 }, { x: 14, y: 5 }, { x: 15, y: 5 },
+      { x: 16, y: 5 }
+    ], Direction.UP, StrategyMap[Strategies.SMARTV1]),
+    new Snake([
+      { x: 13, y: 6 }, { x: 14, y: 6 }, { x: 15, y: 6 },
+      { x: 16, y: 6 }
+    ], Direction.UP, StrategyMap[Strategies.SMARTV1])
   ],
   CONTINUE = false
   

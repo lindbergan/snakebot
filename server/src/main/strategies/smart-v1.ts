@@ -20,7 +20,8 @@ type DirectionRangeComparison = {
 export const SmartV1: Strategy = {
   type: "smart-v1",
   move(snake: Snake, game: Game): Direction {
-    const directions = [...new Set([snake.direction].concat(DIRECTION_VALUES))]
+    const directions = DIRECTION_VALUES
+      .filter(d => d !== getOppositeDirection(snake.direction))
 
     const head = snake.head
     const otherSnakes = game.snakes
@@ -51,29 +52,28 @@ export const SmartV1: Strategy = {
 
     const enemyHead = closestSnake.snake.head
 
-    const possibleDirections = directions
-      .filter(d => d !== getOppositeDirection(snake.direction))
-
     let closestDirection: DirectionRangeComparison = {
       direction: null,
       range: 9999
     }
 
-    for (let direction of possibleDirections) {
+    for (let direction of directions) {
       const maybePosition = translatePosition(head, direction)
-      const range = euclideanDistance(maybePosition, enemyHead)
+      const possible = game.isPositionFreeToMoveTo(maybePosition)
+      const range = possible ? euclideanDistance(maybePosition, enemyHead) : 9999
+
+      console.log({ direction, range })
 
       if (closestDirection === null) {
-        closestDirection = { direction: direction, range }
+        closestDirection = { direction, range }
       } else if (range < closestDirection.range) {
-        closestDirection = { direction: direction, range }
-      }
-
-      // Check if I can go there
-      if (!game.isPositionFreeToMoveTo(maybePosition)) {
-        closestDirection.range += 999
+        closestDirection = { direction, range }
       }
     }
+
+    console.log("Chose")
+    console.log(closestDirection)
+    console.log("------")
 
     if (closestDirection.direction === null) throw new Error("Closest direction should have been found.")
     
