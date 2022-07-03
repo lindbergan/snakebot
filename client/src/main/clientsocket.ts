@@ -1,16 +1,31 @@
 import { Grid } from "./grid"
 
 export class SnakeSocket {
-  ws: WebSocket
+  ws: WebSocket | null = null
   grid: Grid
 
   constructor(url: string, grid: Grid) {
-    this.ws = new WebSocket(url)
-    this.grid = grid
+    const interval = setInterval(() => {
+      if (this.ws && this.ws.readyState === 1) {
+        clearInterval(interval)
+        this.setListeners()
+      } else {
+        this.ws = new WebSocket(url)
 
-    this.ws.addEventListener("open", this.onOpen.bind(this))
-    this.ws.addEventListener("message", this.onMessage.bind(this))
-    this.ws.addEventListener("close", this.onClose.bind(this))
+        if (this.ws && this.ws.readyState === 1) {
+          window.location.reload()
+        }
+      }
+    }, 1000)
+    this.grid = grid
+  }
+
+  setListeners() {
+    if (this.ws) {
+      this.ws.addEventListener("open", this.onOpen.bind(this))
+      this.ws.addEventListener("message", this.onMessage.bind(this))
+      this.ws.addEventListener("close", this.onClose.bind(this))
+    }
   }
   
   onOpen(event: any) {
