@@ -44,8 +44,6 @@ export const SmartV1: Strategy = {
       }
     }
 
-    console.log(closestSnake)
-
     if (closestSnake.snake === null) {
       console.log("Closest snake should have been found.")
       return Direction.DOWN
@@ -76,8 +74,6 @@ export const SmartV1: Strategy = {
         closestDirection.range += 999
       }
     }
-
-    console.log(closestDirection)
 
     if (closestDirection.direction === null) throw new Error("Closest direction should have been found.")
     

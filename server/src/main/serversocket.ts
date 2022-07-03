@@ -31,10 +31,10 @@ export class ServerSocket {
         if (body.ready && lastMsg !== null) this.updateMap(lastMsg)
         else {
           switch(body.command) {
-            case "step": {
-              this.game.step()
-              break
-            }
+            case "step": return this.game.step()
+            case "start": return this.game.start()
+            case "stop": return this.game.stop()
+            case "pause": return this.game.pause()
           }
         }
       })

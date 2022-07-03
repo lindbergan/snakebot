@@ -225,4 +225,11 @@ export class Game {
     console.log("Game has ended")
     process.exit(0)
   }
+
+  pause(): void {
+    if (this.gameInterval) {
+      clearInterval(this.gameInterval)
+    }
+    console.log("Game has been paused")
+  }
 }
