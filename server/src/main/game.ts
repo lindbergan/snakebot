@@ -163,7 +163,7 @@ export class Game {
           if (range < closest) closest = range
         }
 
-        return closest > (this.width / 2)
+        return closest > 6
       })) {
         positions = []
       }

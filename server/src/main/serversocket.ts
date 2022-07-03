@@ -57,7 +57,10 @@ export class ServerSocket {
       console.log("sent smthng")
 
       for (let client of this.clients) {
-        client[1].send(map.toJson())
+        client[1].send(JSON.stringify({
+          map: map.toJson(),
+          snakes: this.game.snakes
+        }))
       }
     }
   }

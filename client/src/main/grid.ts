@@ -58,6 +58,7 @@ export class Grid {
   showGrid() {
     $("#loader").css("display", "none")
     this.el.css("display", "flex")
+    $("#info").css("display", "block")
   }
 
   paint(jsonStr: string): void {
@@ -73,12 +74,17 @@ export class Grid {
     const json = JSON.parse(jsonStr)
 
     const {
+      map: mapStr,
+      snakes
+    } = json
+
+    const {
       width,
       height,
       items,
-     } = json
+    } = JSON.parse(mapStr)
 
-     let iter = 0
+    let iter = 0
 
     for (let i = 0; i < width; i++) {
       const row = $(window.document
@@ -86,7 +92,7 @@ export class Grid {
         .addClass("row")
 
       this.el.append(row)
-      
+
       for (let j = 0; j < height; j++) {
         const cell = items[iter]
 
@@ -124,6 +130,41 @@ export class Grid {
         row.append(square)
         iter += 1
       }
+    }
+
+    $("#info #snakes").empty()
+
+    for (let snake of snakes) {
+      const snakeRow = $(window.document
+        .createElement("div"))
+        .addClass("snake")
+        .addClass("d-flex")
+
+      const snakeSquare = $(window.document
+        .createElement("span"))
+        .addClass("square")
+
+      const color = this.colorMap.get(snake.id)
+
+      if (color) {
+        snakeSquare.css("background-color", color.head)
+      }
+
+      snakeRow.append(snakeSquare)
+      snakeRow.append($(window.document
+        .createElement("span"))
+        .text(snake.strategy.type)
+        .addClass("text"))
+        snakeRow.append($(window.document
+          .createElement("span"))
+          .text(snake.direction)
+          .addClass("text"))
+        snakeRow.append($(window.document
+          .createElement("span"))
+          .text(`{ x: ${snake.head.x}, y: ${snake.head.y} }`)
+          .addClass("text"))
+
+      $("#info #snakes").append(snakeRow)
     }
   }
 
