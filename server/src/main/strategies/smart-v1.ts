@@ -82,6 +82,10 @@ const countFreeTiles = (snake: Snake, game: Game, direction: Direction): number 
 export const SmartV1: Strategy = {
   type: "smart-v1",
   move(snake: Snake, game: Game): Direction {
+    const log = (message: any, ...optionalParams: any[]) => {
+      if (snake.print) console.log(message, optionalParams)
+    }
+
     const directions = DIRECTION_VALUES
       .filter(d => d !== getOppositeDirection(snake.direction))
       .filter(d => game.isPositionFreeToMoveTo(translatePosition(snake.head, d)))
@@ -109,7 +113,7 @@ export const SmartV1: Strategy = {
     }
 
     if (closestSnake.snake === null) {
-      console.log("Closest snake should have been found.")
+      log("Closest snake should have been found.")
       return Direction.DOWN
     }
 
@@ -121,8 +125,8 @@ export const SmartV1: Strategy = {
       freeTiles: 1
     }
 
-    console.log("My choices are: ")
-    console.log(directions)
+    log("My choices are: ")
+    log(directions)
 
     for (let direction of directions) {
       const maybePosition = translatePosition(head, direction)
@@ -138,25 +142,24 @@ export const SmartV1: Strategy = {
       const above20 = freeTiles > 20
 
       // Never choose much less
-      if (!muchLess) {
-
-        if (above20 && isCloser) {
+      if (above20 && isCloser) {
+        closestDirection = { direction, range, freeTiles }
+      }
+      else if (!muchLess) {
+        if (isCloser && (more || lessLimit)) {
           closestDirection = { direction, range, freeTiles }
-        }
-        else {
-          if (isCloser && (more || lessLimit)) {
-            closestDirection = { direction, range, freeTiles }
-          }
         }
       }
 
-      console.log({ direction, range, freeTiles })
+      log({ direction, range, freeTiles })
     }
 
     if (closestDirection.direction === null) {
-      console.log("Closest direction should have been found.")
+      log("Closest direction should have been found.")
       return Direction.DOWN
     }
+
+    log("Chose: " + closestDirection.direction)
     
     return closestDirection.direction
   }

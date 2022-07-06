@@ -63,19 +63,22 @@ export class Game {
     this.height = height
     this.startLength = startLength
 
-    if (testSnakes.length === 0) {
-      for (let i = 0; i < nrOfSnakes; i++) {
-        this.snakes.push(this.createSnake())
-      }
-    } else {
-      this.snakes = testSnakes.map(s => {
-        const positions = s.positions.length === 0 ?
-          this.getRandomSnakeStartPositions(s.direction) :
-          s.positions
+    const snakes = testSnakes
 
-        return new Snake(positions, s.direction, s.strategy)
-      })
+    for (let s of snakes) {
+      if (s.direction === undefined) s.direction = Direction.DOWN
+      if (s.positions.length < this.startLength) {
+        s.positions = this.getRandomSnakeStartPositions(s.direction)
+        s.head = s.positions[0]
+      }
     }
+
+    while(snakes.length < nrOfSnakes) {
+      snakes.push(this.createSnake())
+    }
+
+    this.snakes = snakes
+
     this.testContinue = testContinue
 
     this.map = new SnakeMap(width, height, this.snakes)
@@ -98,11 +101,15 @@ export class Game {
         return this.moveSnake(snake, dir)
     })
 
-    this.map.updateMap(snakes, this.socket)
-    this.tickNr += 1
-    console.log("Tick: " + this.tickNr)
+    if (snakes.length === 0) {
+      console.log("Game is done")
+    } else {
+      this.map.updateMap(snakes, this.socket)
+      this.tickNr += 1
+      console.log("Tick: " + this.tickNr)
 
-    if (print) this.map.printMap()
+      if (print) this.map.printMap()
+    }
   }
 
   setSocket(socket: ServerSocket) {

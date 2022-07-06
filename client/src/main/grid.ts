@@ -25,8 +25,8 @@ export const Orange: SnakeColor = {
 }
 
 export const Red: SnakeColor = {
-  head: "#ef1f1fbf",
-  tail: '#ef1f1f85',
+  head: "darkred",
+  tail: 'palevioletred',
   description: "Orange"
 }
 

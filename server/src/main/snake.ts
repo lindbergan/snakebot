@@ -12,11 +12,13 @@ export class Snake {
   direction: Direction
   alive: boolean
   strategy: Strategy
+  print: Boolean
 
   constructor(
     positions: Position[] = [],
     direction: Direction = Direction.DOWN,
-    strategy: Strategy = StrategyMap[Strategies.SMARTV1]) {
+    strategy: Strategy = StrategyMap[Strategies.SMARTV1],
+    print: Boolean = false) {
 
     this.id = uuid()
 
@@ -27,6 +29,7 @@ export class Snake {
     this.head = positions[0]
     this.length = this.positions.length
     this.alive = true
+    this.print = print
   }
 
   move(game: Game): Direction {

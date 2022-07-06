@@ -11,3 +11,5 @@ const cli = new CLI(socket)
 
 // @ts-ignore off
 window.cli = cli
+// @ts-ignore off
+window.grid = grid
