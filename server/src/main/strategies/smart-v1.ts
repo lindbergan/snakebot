@@ -18,40 +18,65 @@ type DirectionRangeComparison = {
   freeTiles: number
 }
 
-const countFreeTiles = (snake: Snake, game: Game): number => {
+const countFreeTiles = (snake: Snake, game: Game, direction: Direction): number => {
   let freeTiles = 0
 
-  const getDirections = (direction: Direction, head: Position) => {
-    return DIRECTION_VALUES
-      .filter(d => d !== getOppositeDirection(direction))
-      .filter(d => game.isPositionFreeToMoveTo(translatePosition(head, d)))
-  }
+  const getDirections = (pos: Position, dir: Direction): Direction[] =>
+    DIRECTION_VALUES
+      .filter(d => d !== getOppositeDirection(dir))
+      .filter(d => game.isPositionFreeToMoveTo(translatePosition(pos, d)))
 
-  const handler = (direction: Direction, head: Position): [Direction[], number] => {
-    const originalDirections = getDirections(direction, head)
+  const getNeighbours = (pos: Position, dir: Direction, visited: Position[]): Position[] =>
+    getDirections(pos, dir)
+      .map(dirFound => translatePosition(pos, dirFound))
+      .filter(pos => !visited.find(({ x, y }) => pos.x === x && pos.y === y))
 
-    if (originalDirections.length === 0) return [[], 0]
+  const queue: {
+    pos: Position,
+    dir: Direction
+  }[] = []
+  const visited: Position[] = []
 
-    return [ originalDirections, originalDirections.length ]
-  }
+  // This is the position corresponding to the direction we are checking
+  const newPosition = translatePosition(snake.head, direction)
+  const directionsFromHere = getDirections(newPosition, direction)
 
-  for (let i = 0; i < 5; i++) {
-    let testPos = snake.head
+  freeTiles += directionsFromHere.length
 
-    const [ directions, free ] = handler(snake.direction, testPos)
+  const handler = (currentPos: Position,
+    dirs: Direction[], visited: Position[]) => {
+    for (let d of dirs) {
+      const newPos = translatePosition(currentPos, d)
+  
+      visited.push(newPos)
 
-    freeTiles += free
+      const batch = getNeighbours(newPos, d, visited)
+        .map(pos => ({
+          pos,
+          dir: d
+        }))
 
-    for (let direction of directions) {
-      const position = translatePosition(testPos, direction)
-
-      const [ dirs, frees ] = handler(direction, position)
-
-      freeTiles += frees
+      freeTiles += batch.length
+      
+      queue.push(...batch)
     }
   }
 
-  return freeTiles
+  handler(newPosition, directionsFromHere, visited)
+
+  let iter = 0
+
+  for (let { pos, dir } of queue) {
+    // Stop at iteration 10
+    if (iter >= 10) return freeTiles
+
+    handler(pos, getDirections(pos, dir), visited)
+    iter++
+  }
+
+
+  // 0 is almost 1 and it helps with div by 0
+  return freeTiles || 1
 }
 
 export const SmartV1: Strategy = {
@@ -59,6 +84,7 @@ export const SmartV1: Strategy = {
   move(snake: Snake, game: Game): Direction {
     const directions = DIRECTION_VALUES
       .filter(d => d !== getOppositeDirection(snake.direction))
+      .filter(d => game.isPositionFreeToMoveTo(translatePosition(snake.head, d)))
 
     const head = snake.head
     const otherSnakes = game.snakes
@@ -92,23 +118,45 @@ export const SmartV1: Strategy = {
     let closestDirection: DirectionRangeComparison = {
       direction: null,
       range: 9999,
-      freeTiles: -1
+      freeTiles: 1
     }
+
+    console.log("My choices are: ")
+    console.log(directions)
 
     for (let direction of directions) {
       const maybePosition = translatePosition(head, direction)
-      const possible = game.isPositionFreeToMoveTo(maybePosition)
-      const range = possible ? euclideanDistance(maybePosition, enemyHead) : 9999
-      const freeTiles = countFreeTiles(snake, game)
+      const range = euclideanDistance(maybePosition, enemyHead)
+      const freeTiles = countFreeTiles(snake, game, direction)
 
-      if (closestDirection === null) {
-        closestDirection = { direction, range, freeTiles }
-      } else if (range < closestDirection.range) {
-        closestDirection = { direction, range, freeTiles }
+      const isCloser = range < closestDirection.range
+      const freeTilesScale = freeTiles / closestDirection.freeTiles
+      
+      const more = freeTilesScale > 1
+      const muchLess = freeTilesScale < 5
+      const lessLimit = freeTilesScale > 0.8
+      const above20 = freeTiles > 20
+
+      // Never choose much less
+      if (!muchLess) {
+
+        if (above20 && isCloser) {
+          closestDirection = { direction, range, freeTiles }
+        }
+        else {
+          if (isCloser && (more || lessLimit)) {
+            closestDirection = { direction, range, freeTiles }
+          }
+        }
       }
+
+      console.log({ direction, range, freeTiles })
     }
 
-    if (closestDirection.direction === null) throw new Error("Closest direction should have been found.")
+    if (closestDirection.direction === null) {
+      console.log("Closest direction should have been found.")
+      return Direction.DOWN
+    }
     
     return closestDirection.direction
   }

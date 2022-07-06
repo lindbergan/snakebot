@@ -32,19 +32,33 @@ describe('testing strategy smart v1', () => {
       { x: 8, y: 18 },
       { x: 8, y: 17 },
       { x: 8, y: 16 }
-    ], Direction.UP, StrategyMap["smart-v1"])
+    ], Direction.UP, StrategyMap["straight-and-stupid"])
 
     const game = new Game(20, 20, 2, 4, [
       testSnake1, testSnake2
     ])
 
-    game.setSocket(new ServerSocket(game))
+    const socket = new ServerSocket(game)
+    game.setSocket(socket)
 
     expect(game.snakes.length).toBeGreaterThan(0)
 
-    game.step()
+    game.map.updateMap(game.snakes, socket)
 
-    expect(game.snakes[0].move(game)).toStrictEqual(Direction.LEFT)
-    expect(game.snakes[0].move(game)).toStrictEqual(Direction.LEFT)
+    const smartSnake = game.snakes[0]
+
+    // Can't move up or down
+    expect(game.isPositionFreeToMoveTo(translatePosition(smartSnake.head, Direction.UP))).toBeFalsy()
+    expect(game.isPositionFreeToMoveTo(translatePosition(smartSnake.head, Direction.DOWN))).toBeFalsy()
+    
+    // Can move to the left and the right
+    expect(game.isPositionFreeToMoveTo(translatePosition(smartSnake.head, Direction.LEFT))).toBeTruthy()
+    expect(game.isPositionFreeToMoveTo(translatePosition(smartSnake.head, Direction.RIGHT))).toBeTruthy()
+
+    const direction = smartSnake.move(game)
+
+    // The smartest choice here is to move to the left. Thereby avoiding the
+    // trap.
+    expect(direction).toStrictEqual(Direction.LEFT)
   })
 })

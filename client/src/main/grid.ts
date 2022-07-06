@@ -162,6 +162,7 @@ export class Grid {
         .createElement("span"))
         .text(snake.strategy.type)
         .addClass("text"))
+        .addClass("snake-name")
         snakeRow.append($(window.document
           .createElement("span"))
           .text(snake.direction)

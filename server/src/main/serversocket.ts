@@ -26,7 +26,7 @@ export class ServerSocket {
       ws.on("message", (data) => {
         const body = JSON.parse(data.toString("utf-8"))
 
-        // console.log(body)
+        console.log(body)
 
         if (body.ready && lastMsg !== null) this.updateMap(lastMsg)
         else {
@@ -54,8 +54,6 @@ export class ServerSocket {
     console.log("Updating map in server")
 
     if (this.clients.size > 0) {
-      console.log("sent smthng")
-
       for (let client of this.clients) {
         client[1].send(JSON.stringify({
           map: map.toJson(),

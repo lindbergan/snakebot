@@ -15,18 +15,19 @@ module.exports = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js'],
+    extensions: ['.ts', '.js', ".html"],
   },
   output: {
     filename: 'bundle.js',
-    path: path.resolve(__dirname, 'dist'),
+    publicPath: "/dist/",
+    path: path.resolve(__dirname, '/public/dist'),
   },
   devServer: {
-    proxy: {
-      "/public": 'http://localhost:8080'
+    static: {
+      directory: path.join(__dirname, 'public'),
     },
-    static: path.join(__dirname, 'public'),
-    hot: true,
+    compress: true,
+    port: 8080,
   },
   plugins: [
     new HtmlWebpackPlugin({

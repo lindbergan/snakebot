@@ -21,8 +21,10 @@ html, body {
 }
 
 .square {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2em;
+  min-width: 2em;
+  height: 2em;
+  min-height: 2em;
   background-color: hsla(125, 50%, 50%, 0.749);
   display: flex;
   align-items: center;
@@ -67,12 +69,18 @@ html, body {
   display: flex;
   align-items: center;
   font-size: 2rem;
+  text-overflow: ellipsis;
 }
 
 #info .commands {
   font-size: 2rem;
   display: flex;
   gap: 16px;
+}
+
+#info .snake-name {
+  overflow: hidden;
+  white-space: nowrap;
 }
 
 /* CSS Loader */

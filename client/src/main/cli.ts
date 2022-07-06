@@ -62,7 +62,7 @@ export class CLI {
         case "ArrowDown": return this.moveDown()
         case "ArrowLeft": return this.moveLeft()
         case "Space": return this.step()
-        case "KeyR": return this.start()
+        case "KeyS": return this.start()
         case "KeyT": return this.stop()
         case "KeyP": return this.pause()
       }
