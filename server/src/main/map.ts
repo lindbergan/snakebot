@@ -53,10 +53,12 @@ class Column {
 export class Matrix {
   rows: Row[]
   cols: Column[]
+  items: Cell[]
 
   constructor(items: Cell[], width: number, height: number) {
     this.rows = []
     this.cols = []
+    this.items = items
     for (let rowIndex = 0; rowIndex < width; rowIndex++) {
       this.rows.push(new Row(items.filter(i => i.rowIndex === rowIndex)))
     }

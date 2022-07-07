@@ -3,7 +3,8 @@ import { Snake } from "../snake"
 import {
   translatePosition,
   euclideanDistance,
-  getOppositeDirection
+  getOppositeDirection,
+  posEq
 } from "../util"
 import { Strategy } from "./strategies"
 
@@ -75,17 +76,96 @@ const countFreeTiles = (snake: Snake, game: Game, direction: Direction): number 
   }
 
 
-  // 0 is almost 1 and it helps with div by 0
-  return freeTiles || 1
+  // 0 is almost 0.01 and it helps with div by 0
+  return freeTiles || 0.01
+}
+
+/* A-star todo: redo */
+const countRange = (startPos: Position, endPos: Position,
+  snake: Snake, game: Game): number => {
+
+  type PositionComparison = {
+    pos: Position,
+    cost: number, // f-cost
+    gCost: number,
+    hCost: number
+  }
+
+  const getNeighbours = (pos: Position, game: Game, closed: Position[]): Position[] =>
+    DIRECTION_VALUES
+      .map(dir => translatePosition(pos, dir))
+      .filter(pos => game.isPositionFreeToMoveTo(pos))
+      .filter(pos => !closed.find(({ x, y }) => pos.x === x && pos.y === y))
+
+  const getCost = (startPos: Position, endPos: Position, pos: Position): {
+    cost: number, gCost: number, hCost: number } => ({
+    gCost: euclideanDistance(startPos, pos),
+    hCost: euclideanDistance(endPos, pos),
+    cost: euclideanDistance(startPos, pos) + euclideanDistance(endPos, pos)
+  })
+
+  const closed: PositionComparison[] = []
+  const open: PositionComparison[] = getNeighbours(startPos, game, closed.map(({ pos }) => pos))
+    .map(pos => ({
+      pos,
+      ...getCost(startPos, endPos, pos)
+    }))
+    .sort((a, b) => a.cost - b.cost)
+
+  const isInOpen = (pos: Position): boolean =>
+    !!open.find(({ pos: { x, y } }) => pos.x === x && pos.y === y)
+
+  let current: PositionComparison | undefined
+
+  snake.log("Before loop\n" + open.map(({ pos, cost }) => `(${pos.x}, ${pos.y}):${cost.toFixed(1)}`).join(", ") + "\n" + "Open length: " + open.length)
+
+  while (open.length > 0) {
+    current = open.pop()
+
+    if (current === undefined) return 9999
+
+    closed.push(current)
+
+    if (posEq(current.pos, endPos)) return current.cost
+    else {
+      const neighbours: PositionComparison[] = getNeighbours(current.pos, game, closed.map(({ pos }) => pos))
+        .map(pos => ({
+          pos,
+          ...getCost(startPos, endPos, pos)
+        }))
+
+      for (let neighbour of neighbours) {
+        const newCost = current.gCost = euclideanDistance(current.pos, neighbour.pos)
+
+        if ((newCost < neighbour.gCost) || !isInOpen(neighbour.pos)) {
+          neighbour.gCost = newCost
+          neighbour.hCost = euclideanDistance(neighbour.pos, endPos)
+          neighbour.cost = neighbour.gCost + neighbour.hCost
+
+          if (!isInOpen(neighbour.pos)) {
+            open.push(neighbour)
+            open.sort((a, b) => a.cost - b.cost)
+          }
+        }
+      }
+    }
+  }
+
+  const choices = getNeighbours(startPos, game, [])
+    .map(pos => closed.find(({ pos: { x, y } }) => x === pos.x && y === pos.y))
+    .sort((a, b) => {
+      if (!a || !b) return 0
+      return a.cost - b.cost
+    })
+
+  if (choices.length > 0 && choices[0]) return choices[0].cost
+
+  return 9998
 }
 
 export const SmartV1: Strategy = {
   type: "smart-v1",
   move(snake: Snake, game: Game): Direction {
-    const log = (message: any, ...optionalParams: any[]) => {
-      if (snake.print) console.log(message, optionalParams)
-    }
-
     const directions = DIRECTION_VALUES
       .filter(d => d !== getOppositeDirection(snake.direction))
       .filter(d => game.isPositionFreeToMoveTo(translatePosition(snake.head, d)))
@@ -103,7 +183,7 @@ export const SmartV1: Strategy = {
       // Measure euclidean distance from my head to enemy head
       
       const enemyHead = otherSnake.head
-      const range = euclideanDistance(head, enemyHead)
+      const range = countRange(head, enemyHead, snake, game)
 
       if (closestSnake === null) {
         closestSnake = { snake: otherSnake, range }
@@ -113,7 +193,7 @@ export const SmartV1: Strategy = {
     }
 
     if (closestSnake.snake === null) {
-      log("Closest snake should have been found.")
+      snake.log("Closest snake should have been found.")
       return Direction.DOWN
     }
 
@@ -125,12 +205,12 @@ export const SmartV1: Strategy = {
       freeTiles: 1
     }
 
-    log("My choices are: ")
-    log(directions)
+    snake.log("My choices are: ")
+    snake.log(directions)
 
     for (let direction of directions) {
       const maybePosition = translatePosition(head, direction)
-      const range = euclideanDistance(maybePosition, enemyHead)
+      const range = countRange(maybePosition, enemyHead, snake, game)
       const freeTiles = countFreeTiles(snake, game, direction)
 
       const isCloser = range < closestDirection.range
@@ -151,15 +231,15 @@ export const SmartV1: Strategy = {
         }
       }
 
-      log({ direction, range, freeTiles })
+      snake.log({ direction, range, freeTiles })
     }
 
     if (closestDirection.direction === null) {
-      log("Closest direction should have been found.")
+      snake.log("Closest direction should have been found.")
       return Direction.DOWN
     }
 
-    log("Chose: " + closestDirection.direction)
+    snake.log("Chose: " + closestDirection.direction)
     
     return closestDirection.direction
   }

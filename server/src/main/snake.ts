@@ -41,6 +41,12 @@ export class Snake {
     return direction
   }
 
+  log(message: any, ...optionalParams: any[]) {
+    if (this.print) {
+      console.log(message, ...optionalParams)
+    }
+  }
+
   printInfo() {
     process.stdout.write(`Snake:
       ID: ${this.id}
