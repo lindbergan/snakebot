@@ -7,8 +7,10 @@ Simple project to learn pathfinding-algorithms with.
 
 ## Demo
 ### V3 - In TypeScript
-![Demo - v3](screens/demo-v3.gif)
+<img src="screens/demo-v3.gif" alt="Demo - v3" width="400"/>
+
 ### V2
-![Demo - v2](screens/demo-v2.gif)
-### V1
-![Demo - v1](screens/demo.gif)
+<img src="screens/demo-v2.gif" alt="Demo - v2" width="400"/>
+
+### V3
+<img src="screens/demo.gif" alt="Demo - v1" width="400"/>
