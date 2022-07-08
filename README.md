@@ -3,7 +3,7 @@
 ## Description
 Simple project to learn pathfinding-algorithms with.
 
-- **JavaScript, HTML, CSS**
+- **TypeScript, HTML, CSS**
 
 ## Demo
 ### V3 - In TypeScript
