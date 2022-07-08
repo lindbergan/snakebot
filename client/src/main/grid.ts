@@ -25,16 +25,23 @@ export const Orange: SnakeColor = {
 }
 
 export const Red: SnakeColor = {
-  head: "darkred",
+  head: "#c13838d6",
   tail: 'palevioletred',
-  description: "Orange"
+  description: "Red"
+}
+
+export const Yellow: SnakeColor = {
+  head: "yellow",
+  tail: 'rgb(196, 222, 105)',
+  description: "Yellow"
 }
 
 const Colors: SnakeColor[] = [
   Purple,
   Blue,
   Orange,
-  Red
+  Red,
+  Yellow
 ]
 
 type Position = {

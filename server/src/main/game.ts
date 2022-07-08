@@ -34,7 +34,7 @@ const DEFAULTS = {
   height: 6,
   nrOfSnakes: 1,
   startLength: 2,
-  intervalWait: 500
+  intervalWait: 250
 }
 
 export class Game {

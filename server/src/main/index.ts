@@ -4,14 +4,18 @@ import { Snake } from "./snake"
 import { Strategies, StrategyMap } from "./strategies/strategies"
 
 const testSnake1 = new Snake([], undefined,
-  StrategyMap[Strategies.SMARTV1], true)
+  StrategyMap[Strategies.SMARTV1])
+
+const testSnake2 = new Snake([], undefined,
+  StrategyMap[Strategies.STRAIGHT_AND_STUPID])
 
 const WIDTH = 20,
   HEIGHT = 20,
   NR_OF_SNAKES = 4,
   START_LENGTH = 4,
   TEST_SNAKES: Snake[] = [
-    testSnake1
+    testSnake1,
+    testSnake2
   ],
   CONTINUE = false
   

@@ -7,10 +7,8 @@ export class SnakeSocket {
   constructor(url: string, grid: Grid) {
     this.ws = new WebSocket(url)
 
-    console.log(this.ws, this.ws.readyState)
-
     const interval = setInterval(() => {
-      if (this.ws && this.ws.readyState === 1) {
+      if (this.ws && this.ws.readyState === this.ws.OPEN) {
         clearInterval(interval)
 
         console.log("Sending")

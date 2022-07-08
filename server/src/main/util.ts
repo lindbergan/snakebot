@@ -10,9 +10,14 @@ export function getRandomDirection(): Direction {
 }
 
 export function getRandomPosition(width: number, height: number): Position {
+  const diffFromEdge = 5
+
+  const x = (Math.random() * (width - diffFromEdge)) + (diffFromEdge - 1)
+  const y = (Math.random() * (height - diffFromEdge)) + (diffFromEdge - 1)
+
   return {
-    x: parseInt((Math.random() * width).toString()),
-    y: parseInt((Math.random() * height).toString())
+    x: parseInt(x.toString()),
+    y: parseInt(y.toString())
   }
 }
 
@@ -32,6 +37,19 @@ export function changePosY(direction: Direction): number {
 
     default: return 0
   }
+}
+
+export function translateChangeToDirection(deltaX: number, deltaY: number): Direction {
+  if (deltaX >= -1 && deltaX <= 1 && deltaY >= -1 && deltaY <= 1) {
+    if (deltaX === 1 && deltaY === 0) return Direction.UP
+    else if (deltaX === -1 && deltaY === 0) return Direction.DOWN
+    else if (deltaX === 0 && deltaY === -1) return Direction.LEFT
+    else if (deltaX === 0 && deltaY === 1) return Direction.RIGHT
+  }
+
+  console.log(deltaX, deltaY)
+
+  throw new Error("Not properly used")
 }
 
 export function translatePosition(pos: Position, direction: Direction): Position {
